@@ -13,6 +13,7 @@ import Db from './db';
 import AuthGuard from './middleware/authenticationGuard';
 import { authorizationChecker } from './middleware/authorizationChecker';
 import AuthGuardRequest from './interface/AuthGuardRequest';
+import RegistrationResolver from './resolver/registration.resolver';
 
 class App {
     public app: express.Application = express();
@@ -24,9 +25,9 @@ class App {
     private async config() {
         const schema = await buildSchema({
             resolvers: [
-                UserResolver,
                 LoginResolver,
-                ItemResovler
+                ItemResovler,
+                RegistrationResolver
             ],
             authChecker: authorizationChecker,
             validate: false
@@ -71,7 +72,7 @@ class App {
 Db.setupDb(new Db())
     .then(() => {
         const app = new App().app;
-        app.listen(8080, () => {
+        app.listen(8000, () => {
             console.log('Express server listening on port 8080');
         });
     })
