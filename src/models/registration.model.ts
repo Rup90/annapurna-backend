@@ -9,21 +9,14 @@ const RegisteredUsersSchema: Schema = new Schema({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    phoneNumber: { type: Number, required: true },
-    address: { type: String, required: true },
-    role: { type: String, enum: constaint.ROLE, required: true }
+    phoneNumber: { type: Number},
+    address: { type: String },
+    role: { type: String, enum: constaint.ROLE, required: true },
+    avatar: {type: String }
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }
 });
 
-// UserSchema.virtual(
-//     'itemList',
-//     {
-//         ref: 'Items',
-//         foreignField: 'user',
-//         localField: '_id'
-//     }
-// );
 
 export default mongoose.model<RegisteredUsers>('RegisteredUsers', RegisteredUsersSchema);

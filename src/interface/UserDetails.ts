@@ -8,4 +8,7 @@ export default interface RegisteredUsers extends Document {
     password: string;
     confirmPassword: string;
     role: string;
+    phoneNumber: number;
+    address: string;
+    avatar: string;
 }

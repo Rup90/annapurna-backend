@@ -20,12 +20,6 @@ export class RegistrationInput {
     confirmPassword: string;
 
     @Field()
-    phoneNumber: number;
-
-    @Field()
-    address: string;
-
-    @Field()
     role: string;
 }
 

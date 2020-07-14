@@ -23,6 +23,7 @@ export default class ItemResovler {
         @Arg('itemInput') itemInput: ItemInput,
         @Ctx() ctx: JwdTokenPayload
     ): Promise<Item> {
+        console.log('ctx -->', ctx);
         const user =  await userModel.findById(ctx.user_id);
         const item = new ItemModel({
             name: itemInput.name,

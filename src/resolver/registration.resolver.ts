@@ -16,9 +16,10 @@ export default class RegistrationResolver {
             lastName: userInput.lastName,
             email: userInput.email,
             password: hashedPassword,
-            phoneNumber: userInput.phoneNumber,
-            address: userInput.address,
-            role: userInput.role
+            role: userInput.role,
+            address: '',
+            phoneNumber: '',
+            avatar: ''
        });
        user.save();
        const confirmation = {

@@ -14,6 +14,8 @@ import AuthGuard from './middleware/authenticationGuard';
 import { authorizationChecker } from './middleware/authorizationChecker';
 import AuthGuardRequest from './interface/AuthGuardRequest';
 import RegistrationResolver from './resolver/registration.resolver';
+import ItemsResovler from './resolver/addItems.resolver';
+import RegisteredUsersResolver from './resolver/users.resolver';
 
 class App {
     public app: express.Application = express();
@@ -27,7 +29,9 @@ class App {
             resolvers: [
                 LoginResolver,
                 ItemResovler,
-                RegistrationResolver
+                RegistrationResolver,
+                ItemsResovler,
+                RegisteredUsersResolver
             ],
             authChecker: authorizationChecker,
             validate: false
@@ -48,6 +52,7 @@ class App {
                             role: req.role
                         },
                         graphiql: true,
+                        playground: true,
                         customFormatErrorFn: (error) => {
                             return {
                                     message: error.message,
