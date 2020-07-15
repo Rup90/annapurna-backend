@@ -12,7 +12,8 @@ const RegisteredUsersSchema: Schema = new Schema({
     phoneNumber: { type: Number},
     address: { type: String },
     role: { type: String, enum: constaint.ROLE, required: true },
-    avatar: {type: String }
+    avatar: {type: String },
+    itemsAdded: {type: Array }
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }

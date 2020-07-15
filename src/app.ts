@@ -16,6 +16,8 @@ import AuthGuardRequest from './interface/AuthGuardRequest';
 import RegistrationResolver from './resolver/registration.resolver';
 import ItemsResovler from './resolver/addItems.resolver';
 import RegisteredUsersResolver from './resolver/users.resolver';
+import LogoutResolver from './resolver/logout';
+import { UploadAvatareResolver } from './resolver/upload-avatar';
 
 class App {
     public app: express.Application = express();
@@ -31,7 +33,9 @@ class App {
                 ItemResovler,
                 RegistrationResolver,
                 ItemsResovler,
-                RegisteredUsersResolver
+                RegisteredUsersResolver,
+                LogoutResolver,
+                UploadAvatareResolver
             ],
             authChecker: authorizationChecker,
             validate: false
@@ -49,7 +53,8 @@ class App {
                         context: {
                             isAuth: req.isAuth,
                             user_id: req.user_id,
-                            role: req.role
+                            role: req.role,
+                            token: req.token
                         },
                         graphiql: true,
                         playground: true,

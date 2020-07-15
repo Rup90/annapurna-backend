@@ -10,8 +10,9 @@ export default class RegistrationResolver {
     @registrationInputValidation
     @Mutation(returns => RegistrationConfirm)
     async registration(@Arg('userInput') userInput: RegistrationInput): Promise<RegistrationConfirm> {
+        console.log('RegistrationInput ==>', userInput);
        const hashedPassword = await hash(userInput.password, 12);
-       const user = new RegisteredUserModel({
+       const userModel = {
             firstName: userInput.firstName,
             lastName: userInput.lastName,
             email: userInput.email,
@@ -20,7 +21,10 @@ export default class RegistrationResolver {
             address: '',
             phoneNumber: '',
             avatar: ''
-       });
+       };
+       if (userInput.role === 'FARMAR') userModel['itemsAdded'] = [];
+       console.log('userModel', userModel);
+       const user = new RegisteredUserModel(userModel);
        user.save();
        const confirmation = {
            email: userInput.email,

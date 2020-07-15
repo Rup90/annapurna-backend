@@ -10,7 +10,7 @@ import constaint, { ValidationError } from '../constaint/constaint';
 @Resolver()
 export default class LoginResolver {
 
-    @Query(returns => AuthData, { nullable: false })
+    @Query(returns => AuthData, { nullable: true })
     async login(@Arg('loginInput') loginInput: LoginInput): Promise<AuthData> {
         const user = await RegisteredUserModel.findOne({ email: loginInput.email });
         if(!user) {
