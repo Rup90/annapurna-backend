@@ -17,9 +17,6 @@ export class RegistrationInput {
     password: string;
 
     @Field()
-    confirmPassword: string;
-
-    @Field()
     role: string;
 }
 
@@ -31,4 +28,7 @@ export class RegistrationConfirm {
 
     @Field()
     message: string;
+
+    @Field()
+    status: number;
 }

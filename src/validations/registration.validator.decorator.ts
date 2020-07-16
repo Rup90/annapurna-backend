@@ -29,9 +29,9 @@ export default function registrationInputValidation(
             errors.push(ValidationError.INVALID_PASSWORD);
         }
 
-        if (args.password !== args.confirmPassword) {
-                errors.push(ValidationError.PASSWORD_MISMATCH);
-        }
+        // if (args.password !== args.confirmPassword) {
+        //         errors.push(ValidationError.PASSWORD_MISMATCH);
+        // }
 
         if(!constaint.ROLE.includes(args.role)) {
             errors.push(ValidationError.INVALID_ROLE);

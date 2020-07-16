@@ -28,7 +28,8 @@ export default class RegistrationResolver {
        user.save();
        const confirmation = {
            email: userInput.email,
-           message: 'Successfully registered. Please login'
+           message: 'Successfully registered. Please login',
+           status: 200
        };
        return await confirmation;
     }
