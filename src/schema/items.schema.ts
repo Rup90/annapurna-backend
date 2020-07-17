@@ -20,13 +20,13 @@ export class ItemAddConfirmation {
 
     @Field()
     message: string;
+
+    @Field()
+    status: number;
 }
 
 @InputType()
 export class AddItemInput {
-
-    @Field()
-    email: string;
 
     @Field()
     itemName: string;
@@ -38,17 +38,17 @@ export class AddItemInput {
     id: string;
 
     @Field()
-    quantity: number;
+    quantity: string;
 
     @Field()
-    pricePerKg: number;
+    pricePerKg: string;
 }
 
 @InputType()
 export class DeleteItemInput {
 
     @Field()
-    email: string;
+    id: string;
 
     @Field()
     itemName: string;

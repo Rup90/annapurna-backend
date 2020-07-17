@@ -19,16 +19,13 @@ export class UserUpdateInput {
     email: string;
 
     @Field()
-    phoneNumber: Number;
+    phoneNumber: string;
 
     @Field()
     address: string;
 
     @Field()
     role: string;
-
-    @Field()
-    avatar: string;
 }
 
 
@@ -48,7 +45,7 @@ export class UserInformations {
     email: string;
 
     @Field({ nullable: true })
-    phoneNumber?: number;
+    phoneNumber?: string;
 
     @Field()
     address?: string;

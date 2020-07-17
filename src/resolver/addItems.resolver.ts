@@ -51,7 +51,8 @@ export default class ItemsResovler {
             item.save();
             const response = {
                 itemName: itemInput.itemName,
-                message: 'New Item Added'
+                message: 'New Item Added',
+                status: 200
             };
             await pubSub.publish(NotificationType.ADD_ITEMS, response);
             return  response;
@@ -65,8 +66,7 @@ export default class ItemsResovler {
         @Arg('itemInput') itemInput: AddItemInput,
         @Ctx() ctx: JwdTokenPayload
     ): Promise<ItemAddConfirmation> {
-        const user = await RegisteredUserModel.findOne({ email: itemInput.email });
-        //if (user['itemsAdded'].find()
+        const user = await RegisteredUserModel.findById(ctx.user_id);
         if(!user) {
             throw new CustomError([ValidationError.ITEM_ALREADY_ADDED], 401);
         } else {
@@ -75,10 +75,12 @@ export default class ItemsResovler {
             });
             const response = {
                 itemName: itemInput.itemName,
-                message: 'New Item Added'
+                message: 'New Item Added',
+                status: 200
             };
             if (find.length > 0) {
                 response.message = 'Iteam already selected';
+                response.status = 401;
             } else {
                 console.log(find);
                 const item = {
@@ -101,15 +103,22 @@ export default class ItemsResovler {
         @Arg('itemInput') itemInput: AddItemInput,
         @Ctx() ctx: JwdTokenPayload
     ): Promise<ItemAddConfirmation> {
+        console.log('itemInput ==>', itemInput);
         const response = {
             itemName: itemInput.itemName,
-            message: 'Item Not Added'
+            message: 'Item Not Added',
+            status: 401
         };
-        await RegisteredUserModel.findOneAndUpdate({email: itemInput.email, itemsAdded: {$elemMatch: {itemName: itemInput.itemName}}},
+        await RegisteredUserModel.findOneAndUpdate({_id: ctx.user_id, itemsAdded: {$elemMatch: {itemName: itemInput.itemName}}},
             {$set: {'itemsAdded.$.quantity': itemInput.quantity,
-                    'itemsAdded.$.pricePerKg': itemInput.pricePerKg}}).then(res => {
+                    'itemsAdded.$.pricePerKg': itemInput.pricePerKg}}, {
+                        new: true,
+                        upsert: true,
+                        rawResult: true
+                      }).then(res => {
                         if (res) {
                             response.message = 'Item Updated';
+                            response.status = 200;
                         }
                     }, (err) => {
                         response.message = 'Something is wrong';
@@ -125,9 +134,10 @@ export default class ItemsResovler {
     ): Promise<ItemAddConfirmation> {
         const response = {
             itemName: itemInput.itemName,
-            message: 'Item Deleted'
+            message: 'Item Deleted',
+            status: 200
         };
-        await RegisteredUserModel.update({ email: itemInput.email }, { $pull: { itemsAdded : { itemName: itemInput.itemName } } },
+        await RegisteredUserModel.update({ _id: ctx.user_id }, { $pull: { itemsAdded : { id: itemInput.id } } },
             { safe: true }, (err, obj) => {
                 console.log(err);
             });
@@ -140,12 +150,10 @@ export default class ItemsResovler {
         return itemAdded;
     }
 
-    @Authorized(Role.FARMAR)
-    @Query(returns => [FetchSelectedItemLists])
-    async fetchAllSelectedItems(
-        @Arg('userInput') userInput: FetchSelectedItemListsInput,
-    ): Promise<FetchSelectedItemLists[]> {
-        const user = await RegisteredUserModel.findOne({ email: userInput.email });
+    @Authorized()
+    @Query(returns => [FetchSelectedItemLists], { nullable: true })
+    async fetchAllSelectedItems(@Ctx() ctx: JwdTokenPayload): Promise<FetchSelectedItemLists[]> {
+        const user = await RegisteredUserModel.findById(ctx.user_id);
         if(user) {
             return  user['itemsAdded'];
         } else {

@@ -4,15 +4,15 @@ import { hash } from 'bcrypt';
 import {UserInput,  UserInformations, UserUpdateInput } from '../schema/profile.schema';
 import RegisteredUsers from '../models/registration.model';
 import updateUserValidation from '../validations/updateProfile.validator.decorator';
-
+import JwdTokenPayload from '../interface/JwdTokenPayload';
 
 @Resolver()
 export default class RegisteredUsersResolver {
 
     @Authorized()
     @Query(returns => UserInformations, { nullable: true })
-    async getUserInfo(@Arg('userInput') userInput: UserInput): Promise<UserInformations> {
-       const user = RegisteredUsers.findOne({email: userInput.email});
+    async getUserInfo(@Ctx() ctx: JwdTokenPayload): Promise<UserInformations> {
+       const user = RegisteredUsers.findById(ctx.user_id);
        return await user;
     }
 
@@ -24,13 +24,13 @@ export default class RegisteredUsersResolver {
        const updatedInfo = {
             firstName: userInput.firstName,
             lastName: userInput.lastName,
-            email: userInput.email,
             phoneNumber: userInput.phoneNumber,
             address: userInput.address,
-            role: userInput.role,
-            avatar: userInput.avatar
+            role: userInput.role
        };
-       return await RegisteredUsers.findOneAndUpdate(filter, updatedInfo);
+       return await RegisteredUsers.findOneAndUpdate(filter, updatedInfo, {
+         new: true
+       });
     }
 
 }

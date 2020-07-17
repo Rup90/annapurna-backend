@@ -26,10 +26,6 @@ export default function userInputValidation(
             errors.push(ValidationError.INVALID_PASSWORD);
         }
 
-        if(!validator.isLength(String(args.phoneNumber), { min: 10, max: 10 })) {
-            errors.push(ValidationError.INVALID_PHONE);
-        }
-
         if(!constaint.ROLE.includes(args.role)) {
             errors.push(ValidationError.INVALID_ROLE);
         }
