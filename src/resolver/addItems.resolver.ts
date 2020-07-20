@@ -27,18 +27,27 @@ import { AddItemNotification } from '../schema/notification.schema';
 import CustomError from '../utils/custome.error';
 import RegisteredUserModel from '../models/registration.model';
 import SelectedItem from '../interface/SelectedItems';
+import { GraphQLUpload } from 'graphql-upload';
+import { createWriteStream } from 'fs';
+import { Upload } from '../interface/Avatar';
 
 @Resolver()
 export default class ItemsResovler {
 
+
+
     @Authorized(Role.ADMIN)
     @Mutation(returns => ItemAddConfirmation)
     async addNewItem(
-        @Arg('itemInput') itemInput: NewItemInput,
         @Ctx() ctx: JwdTokenPayload,
-        @PubSub() pubSub: PubSubEngine
-    ): Promise<ItemAddConfirmation> {
-        console.log('ctx -->', ctx);
+        @Arg('picture', () => GraphQLUpload) {
+        createReadStream,
+        filename
+    }: Upload, @Arg('itemInput') itemInput: NewItemInput): Promise<ItemAddConfirmation> {
+        const path = __dirname + `/../images/items/${filename}`;
+        const userImagePath = `images/items/${filename}`;
+        console.log(itemInput);
+        const file = createReadStream().pipe(createWriteStream(path));
         const itemAdded = await ItemLists.findOne({ itemName: itemInput.itemName });
         if(itemAdded) {
             throw new CustomError([ValidationError.ITEM_ALREADY_ADDED], 401);
@@ -46,7 +55,7 @@ export default class ItemsResovler {
             const item = new ItemLists({
                 itemName: itemInput.itemName,
                 category: itemInput.category,
-                itemImage: itemInput.itemImage
+                itemImage: userImagePath
             });
             item.save();
             const response = {
@@ -54,7 +63,6 @@ export default class ItemsResovler {
                 message: 'New Item Added',
                 status: 200
             };
-            await pubSub.publish(NotificationType.ADD_ITEMS, response);
             return  response;
         }
     }
@@ -103,7 +111,6 @@ export default class ItemsResovler {
         @Arg('itemInput') itemInput: AddItemInput,
         @Ctx() ctx: JwdTokenPayload
     ): Promise<ItemAddConfirmation> {
-        console.log('itemInput ==>', itemInput);
         const response = {
             itemName: itemInput.itemName,
             message: 'Item Not Added',

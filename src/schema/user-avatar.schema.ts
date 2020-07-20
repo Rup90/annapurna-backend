@@ -17,16 +17,11 @@ export class Upload {
   filesize: string;
 }
 
-// export class Upload {
-//   @Field()
-//   size: string;
+@ObjectType()
+export class ImagePathReturn {
+  @Field()
+  status: number;
 
-//   @Field()
-//   name: string;
-
-//   @Field()
-//   type: string;
-
-//   @Field()
-//   path: string;
-// }
+  @Field()
+  avatar: string;
+}

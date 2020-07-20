@@ -8,9 +8,6 @@ export class NewItemInput {
 
     @Field()
     category: string;
-
-    @Field()
-    itemImage: string;
 }
 
 @ObjectType()
