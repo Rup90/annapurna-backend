@@ -39,6 +39,15 @@ export class AddItemInput {
 
     @Field()
     pricePerKg: string;
+
+    @Field()
+    pickupDate: string;
+
+    @Field()
+    location: string;
+
+    @Field()
+    pickupTime: string;
 }
 
 @InputType()
@@ -89,4 +98,13 @@ export class FetchSelectedItemLists {
 
     @Field()
     pricePerKg: number;
+
+    @Field()
+    pickupDate: string;
+
+    @Field()
+    location: string;
+
+    @Field()
+    pickupTime: string;
 }

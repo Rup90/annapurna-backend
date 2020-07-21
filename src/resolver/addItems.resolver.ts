@@ -75,6 +75,7 @@ export default class ItemsResovler {
         @Ctx() ctx: JwdTokenPayload
     ): Promise<FetchSelectedItemLists[]> {
         const user = await RegisteredUserModel.findById(ctx.user_id);
+        console.log('itemInput =>', itemInput);
         if(!user) {
             throw new CustomError([ValidationError.ITEM_ALREADY_ADDED], 401);
         } else {
@@ -95,7 +96,10 @@ export default class ItemsResovler {
                     category: itemInput.category,
                     id: itemInput.id,
                     quantity: itemInput.quantity,
-                    pricePerKg: itemInput.pricePerKg
+                    pricePerKg: itemInput.pricePerKg,
+                    pickupDate: itemInput.pickupDate,
+                    location: itemInput.location,
+                    pickupTime: itemInput.pickupTime
                 };
                 user['itemsAdded'].push(item);
                 user.save();
@@ -112,7 +116,11 @@ export default class ItemsResovler {
     ): Promise<FetchSelectedItemLists[]> {
         await RegisteredUserModel.findOneAndUpdate({_id: ctx.user_id, itemsAdded: {$elemMatch: {itemName: itemInput.itemName}}},
             {$set: {'itemsAdded.$.quantity': itemInput.quantity,
-                    'itemsAdded.$.pricePerKg': itemInput.pricePerKg}}, {
+                    'itemsAdded.$.pricePerKg': itemInput.pricePerKg,
+                    'itemsAdded.$.pickupDate': itemInput.pickupDate,
+                    'itemsAdded.$.pickupTime': itemInput.pickupTime,
+                    'itemsAdded.$.location': itemInput.location
+                }}, {
                         new: true,
                         upsert: true,
                         rawResult: true
