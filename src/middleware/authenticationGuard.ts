@@ -20,7 +20,6 @@ export default (req: AuthGuardRequest, res: Response, next: NextFunction) => {
         req.isAuth = false;
         return next();
     }
-
     if(!jwtPayload) {
         req.isAuth = false;
         return next();
@@ -29,5 +28,6 @@ export default (req: AuthGuardRequest, res: Response, next: NextFunction) => {
     req.user_id = jwtPayload.user_id;
     req.role = jwtPayload.role;
     req.isAuth = true;
+    req.token = token[1];
     next();
 };
