@@ -1,11 +1,12 @@
 import * as express from 'express';
 import  { Response } from 'express';
 import * as graphqlHTTP from 'express-graphql';
+import { graphqlUploadExpress } from 'graphql-upload';
 import * as bodyParser from 'body-parser-graphql';
 import * as cors from 'cors';
 import { buildSchema } from 'type-graphql';
 import 'reflect-metadata';
-
+const path = require('path');
 import UserResolver from './resolver/user.resolver';
 import LoginResolver from './resolver/login.resolver';
 import ItemResovler from './resolver/item.resolver';
@@ -18,7 +19,7 @@ import ItemsResovler from './resolver/addItems.resolver';
 import RegisteredUsersResolver from './resolver/users.resolver';
 import LogoutResolver from './resolver/logout';
 import { UploadAvatareResolver } from './resolver/upload-avatar';
-
+import  logger  from './config/logs/logger';
 class App {
     public app: express.Application = express();
 
@@ -43,9 +44,14 @@ class App {
         this.app.use(bodyParser.graphql());
         this.app.use(cors());
         this.app.use(AuthGuard);
-
+        this.app.use('/images', express.static(path.join(__dirname, './images')));
+        this.app.use((req, res, next) => {
+            logger.log('http', req.body);
+            next();
+        });
         this.app.use(
             '/graphql',
+            graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }),
             graphqlHTTP(
                 async(req: AuthGuardRequest, res: Response) => {
                     return {
@@ -83,9 +89,11 @@ Db.setupDb(new Db())
     .then(() => {
         const app = new App().app;
         app.listen(8000, () => {
-            console.log('Express server listening on port 8080');
+            // console.log('Express server listening on port 8080');
+            logger.log('info', 'Express server listening on port 8080');
         });
     })
     .catch((error) => {
-        console.log('database connection faild');
+        // console.log('database connection faild');
+        logger.log('error', 'database connection faild');
     });
