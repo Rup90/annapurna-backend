@@ -69,11 +69,11 @@ export default class ItemsResovler {
 
 
     @Authorized(Role.FARMAR)
-    @Mutation(returns => ItemAddConfirmation)
+    @Mutation(returns => [FetchSelectedItemLists])
     async selectItem(
         @Arg('itemInput') itemInput: AddItemInput,
         @Ctx() ctx: JwdTokenPayload
-    ): Promise<ItemAddConfirmation> {
+    ): Promise<FetchSelectedItemLists[]> {
         const user = await RegisteredUserModel.findById(ctx.user_id);
         if(!user) {
             throw new CustomError([ValidationError.ITEM_ALREADY_ADDED], 401);
@@ -90,7 +90,6 @@ export default class ItemsResovler {
                 response.message = 'Iteam already selected';
                 response.status = 401;
             } else {
-                console.log(find);
                 const item = {
                     itemName: itemInput.itemName,
                     category: itemInput.category,
@@ -101,44 +100,33 @@ export default class ItemsResovler {
                 user['itemsAdded'].push(item);
                 user.save();
             }
-            return  response;
+            return  user['itemsAdded'];
         }
     }
 
     @Authorized(Role.FARMAR)
-    @Mutation(returns => ItemAddConfirmation)
+    @Mutation(returns => [FetchSelectedItemLists])
     async updatetItem(
         @Arg('itemInput') itemInput: AddItemInput,
         @Ctx() ctx: JwdTokenPayload
-    ): Promise<ItemAddConfirmation> {
-        const response = {
-            itemName: itemInput.itemName,
-            message: 'Item Not Added',
-            status: 401
-        };
+    ): Promise<FetchSelectedItemLists[]> {
         await RegisteredUserModel.findOneAndUpdate({_id: ctx.user_id, itemsAdded: {$elemMatch: {itemName: itemInput.itemName}}},
             {$set: {'itemsAdded.$.quantity': itemInput.quantity,
                     'itemsAdded.$.pricePerKg': itemInput.pricePerKg}}, {
                         new: true,
                         upsert: true,
                         rawResult: true
-                      }).then(res => {
-                        if (res) {
-                            response.message = 'Item Updated';
-                            response.status = 200;
-                        }
-                    }, (err) => {
-                        response.message = 'Something is wrong';
-                    });
-            return  response;
+                      });
+        const user = await RegisteredUserModel.findById(ctx.user_id);
+        return  user['itemsAdded'];
     }
 
     @Authorized(Role.FARMAR)
-    @Mutation(returns => ItemAddConfirmation)
+    @Mutation(returns => [FetchSelectedItemLists])
     async deletetItem(
         @Arg('itemInput') itemInput: DeleteItemInput,
         @Ctx() ctx: JwdTokenPayload
-    ): Promise<ItemAddConfirmation> {
+    ): Promise<FetchSelectedItemLists[]> {
         const response = {
             itemName: itemInput.itemName,
             message: 'Item Deleted',
@@ -148,7 +136,8 @@ export default class ItemsResovler {
             { safe: true }, (err, obj) => {
                 console.log(err);
             });
-            return  response;
+        const user = await RegisteredUserModel.findById(ctx.user_id);
+        return  user['itemsAdded'];
     }
 
     @Query(returns => [AllItemLists])
