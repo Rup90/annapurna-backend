@@ -7,6 +7,7 @@ import * as cors from 'cors';
 import { buildSchema } from 'type-graphql';
 import 'reflect-metadata';
 const path = require('path');
+require('dotenv').config();
 import UserResolver from './resolver/user.resolver';
 import LoginResolver from './resolver/login.resolver';
 import ItemResovler from './resolver/item.resolver';
@@ -89,7 +90,7 @@ Db.setupDb(new Db())
     .then(() => {
         const app = new App().app;
         app.listen(8000, () => {
-            // console.log('Express server listening on port 8080');
+            console.log('>>>>', process.env.HTTPREQFILENAME);
             logger.log('info', 'Express server listening on port 8080');
         });
     })

@@ -3,4 +3,5 @@ export default interface JwdTokenPayload {
     role: string;
     iat: number;
     exp: number;
+    token: string;
 }
