@@ -31,4 +31,7 @@ export class RegistrationConfirm {
 
     @Field()
     status: number;
+
+    @Field()
+    mailInfo!: string;
 }

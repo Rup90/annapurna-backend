@@ -4,11 +4,11 @@ import 'winston-daily-rotate-file';
 
 const transport = new winston.transports.DailyRotateFile({
   filename: `${process.env.HTTPLOGFILE}-%DATE%.log`,
-  datePattern: 'DD-MM-HH-mm',
+  datePattern: 'DD-MM-HH',
   zippedArchive: true,
   maxSize: '10m',
   maxFiles: '14d',
-  frequency: '2m',
+  frequency: '5h',
   level: 'http',
   format: winston.format.combine(
     winston.format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.sss' }),
