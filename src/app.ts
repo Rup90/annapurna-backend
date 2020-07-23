@@ -1,3 +1,4 @@
+
 import * as express from 'express';
 import  { Response } from 'express';
 import * as graphqlHTTP from 'express-graphql';
@@ -21,15 +22,19 @@ import RegisteredUsersResolver from './resolver/users.resolver';
 import LogoutResolver from './resolver/logout';
 import { UploadAvatareResolver } from './resolver/upload-avatar';
 import  logger  from './config/logs/logger';
+import { execute, subscribe } from 'graphql';
+import { createServer } from 'http';
+import { SubscriptionServer } from 'subscriptions-transport-ws';
+
 class App {
     public app: express.Application = express();
-
+    public schema;
     constructor() {
         this.config();
     }
 
     private async config() {
-        const schema = await buildSchema({
+        this.schema = await buildSchema({
             resolvers: [
                 LoginResolver,
                 ItemResovler,
@@ -56,7 +61,7 @@ class App {
             graphqlHTTP(
                 async(req: AuthGuardRequest, res: Response) => {
                     return {
-                        schema,
+                        schema: this.schema,
                         context: {
                             isAuth: req.isAuth,
                             user_id: req.user_id,
@@ -65,7 +70,8 @@ class App {
                         },
                         graphiql: true,
                         playground: true,
-                        customFormatErrorFn: (error) => {
+                        // subscriptionsEndpoint: `ws://localhost:5000/subscriptions`,
+                        customFormatErrorFn: (error: any) => {
                             return {
                                     message: error.message,
                                     path: error.path,
@@ -83,15 +89,40 @@ class App {
             )
         );
 
+        // const server = createServer(this.app);
+        // server.listen(5000, () => {
+        //     console.log('Port <<>>>> running in 5000');
+        //     new SubscriptionServer({
+        //       execute,
+        //       subscribe,
+        //       schema: this.schema,
+        //     }, {
+        //       server: server,
+        //       path: '/subscriptions',
+        //     });
+        // });
     }
 }
 
 Db.setupDb(new Db())
     .then(() => {
-        const app = new App().app;
-        app.listen(8000, () => {
-            console.log('>>>>', process.env.HTTPREQFILENAME);
-            logger.log('info', 'Express server listening on port 8080');
+        const appInstance: App = new App();
+        const app = appInstance.app;
+        // app.listen(8000, () => {
+        //     console.log('>>>> Port is running 8000')
+        //     logger.log('info', 'Express server listening on port 8080');
+        // });
+        const server = createServer(appInstance.app);
+        server.listen(8000, () => {
+            console.log('Port <<>>>> running in 5000');
+            new SubscriptionServer({
+              execute,
+              subscribe,
+              schema: appInstance.schema,
+            }, {
+              server: server,
+              path: '/subscriptions',
+            });
         });
     })
     .catch((error) => {

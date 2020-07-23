@@ -6,6 +6,30 @@ export class AddItemNotification {
     itemName: string;
 
     @Field()
-    message: string;
+    category: string;
+
+    @Field()
+    id: string;
+
+    @Field()
+    quantity: string;
+
+    @Field()
+    pricePerKg: string;
+
+    @Field()
+    pickupDate: string;
+
+    @Field()
+    location: string;
+
+    @Field()
+    pickupTime: string;
+
+    @Field()
+    pickupStatus: string;
+
+    @Field()
+    u_id: string;
 
 }

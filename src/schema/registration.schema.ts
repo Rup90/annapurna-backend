@@ -1,7 +1,4 @@
 import { InputType, Field, ObjectType } from 'type-graphql';
-import { OneToMany } from 'typeorm';
-import { Item } from './item.schema';
-
 @InputType()
 export class RegistrationInput {
     @Field()

@@ -10,7 +10,6 @@ export default class LogoutResolver {
     async logout(
         @Ctx() ctx: JwdTokenPayload,
         @Arg('logoutInput') logoutInput: LogoutInput): Promise<LogoutConfirmation> {
-            console.log('ctx ===>', ctx);
         ctx.token = '';
         return {
             message: 'Successfully logout.'

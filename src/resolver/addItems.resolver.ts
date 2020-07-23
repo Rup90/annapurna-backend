@@ -6,11 +6,9 @@ import {
     Subscription,
     Ctx,
     Query,
-    Root,
-    PubSub
+    Root
 } from 'type-graphql';
-import { PubSubEngine } from 'graphql-subscriptions';
-import { RedisPubSub } from 'graphql-redis-subscriptions';
+import { PubSub} from 'graphql-subscriptions';
 import { NewItemInput,
     ItemAddConfirmation,
     AddItemInput,
@@ -34,7 +32,10 @@ import { Upload } from '../interface/Avatar';
 @Resolver()
 export default class ItemsResovler {
 
-
+    public pubSUb: PubSub;
+    constructor() {
+        this.pubSUb = new PubSub();
+    }
 
     @Authorized(Role.ADMIN)
     @Mutation(returns => ItemAddConfirmation)
@@ -46,7 +47,6 @@ export default class ItemsResovler {
     }: Upload, @Arg('itemInput') itemInput: NewItemInput): Promise<ItemAddConfirmation> {
         const path = __dirname + `/../images/items/${filename}`;
         const userImagePath = `images/items/${filename}`;
-        console.log(itemInput);
         const file = createReadStream().pipe(createWriteStream(path));
         const itemAdded = await ItemLists.findOne({ itemName: itemInput.itemName });
         if(itemAdded) {
@@ -75,7 +75,6 @@ export default class ItemsResovler {
         @Ctx() ctx: JwdTokenPayload
     ): Promise<FetchSelectedItemLists[]> {
         const user = await RegisteredUserModel.findById(ctx.user_id);
-        console.log('itemInput =>', itemInput);
         if(!user) {
             throw new CustomError([ValidationError.ITEM_ALREADY_ADDED], 401);
         } else {
@@ -104,8 +103,14 @@ export default class ItemsResovler {
                 };
                 user['itemsAdded'].push(item);
                 user.save();
+                const notficationPaylod = {
+                    ...item,
+                    u_id: ctx.user_id
+                };
+                console.log(notficationPaylod);
+                this.pubSUb.publish('NOTIFICATIONS', {newNotification: notficationPaylod});
             }
-            return  user['itemsAdded'];
+            return  await user['itemsAdded'];
         }
     }
 
@@ -166,16 +171,16 @@ export default class ItemsResovler {
         }
     }
 
-    // @Subscription(returns => AddItemNotification, {
-    //     topics: NotificationType.ADD_ITEMS
-    // })fetchAllItems
-    // newNotification(
-    //     @PubSub() pubSub: PubSubEngine,
-    //     @Arg('topic') topic: string,
-    //     @Root() { itemName, message }: NotificationPayload,
-    // ) {
-    //     console.log('itemName ==>', itemName);
-    //     return pubSub.asyncIterator(NotificationType.ADD_ITEMS);
-    // }
+    @Subscription(returns => AddItemNotification, {
+        topics: 'NOTIFICATIONS',
+    })
+    newNotification(
+        @Root() notificationPayload: AddItemNotification
+    ) {
+        console.log('notificationPayload =>', notificationPayload);
+        // this.pubSUb.asyncIterator(NotificationType.ADD_ITEMS);
+        return notificationPayload;
+    }
+
 
 }
