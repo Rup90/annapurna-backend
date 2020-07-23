@@ -107,4 +107,7 @@ export class FetchSelectedItemLists {
 
     @Field()
     pickupTime: string;
+
+    @Field()
+    pickupStatus: string;
 }

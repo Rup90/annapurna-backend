@@ -22,7 +22,10 @@ export default class RegistrationResolver {
             phoneNumber: '',
             avatar: ''
        };
-       if (userInput.role === 'FARMAR') userModel['itemsAdded'] = [];
+       if (userInput.role === 'FARMAR') {
+            userModel['itemsAdded'] = [];
+            userModel['itemsPicked'] = [];
+       }
        const user = new RegisteredUserModel(userModel);
        user.save();
        const mailConfirmation = await sendConfirmationEmail(userInput.email, userInput.role);

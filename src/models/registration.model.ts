@@ -13,7 +13,8 @@ const RegisteredUsersSchema: Schema = new Schema({
     address: { type: String },
     role: { type: String, enum: constaint.ROLE, required: true },
     avatar: {type: String },
-    itemsAdded: {type: Array }
+    itemsAdded: {type: Array },
+    itemsPicked: {type: Array}
 }, {
     toJSON: { virtuals: true },
     toObject: { virtuals: true }

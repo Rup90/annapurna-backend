@@ -99,7 +99,8 @@ export default class ItemsResovler {
                     pricePerKg: itemInput.pricePerKg,
                     pickupDate: itemInput.pickupDate,
                     location: itemInput.location,
-                    pickupTime: itemInput.pickupTime
+                    pickupTime: itemInput.pickupTime,
+                    pickupStatus: 'Pending'
                 };
                 user['itemsAdded'].push(item);
                 user.save();
