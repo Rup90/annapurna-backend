@@ -25,15 +25,31 @@ import  logger  from './config/logs/logger';
 import { execute, subscribe } from 'graphql';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
+import FarmersAddedItemsResovler from './resolver/farmerAddedItems.resolver';
+// import * as Redis from 'ioredis';
+// import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 class App {
     public app: express.Application = express();
     public schema;
+    // public REDIS_HOST = 'localhost'; // replace with own IP
+    // public REDIS_PORT = 4200;
+    // public options: Redis.RedisOptions;
+    // public pubSub;
     constructor() {
+        // this.options  = {
+        //     host: this.REDIS_HOST,
+        //     port: this.REDIS_PORT,
+        //     retryStrategy: times => Math.max(times * 100, 3000),
+        // };
         this.config();
     }
 
     private async config() {
+        // this.pubSub = new RedisPubSub({
+        //     publisher: new Redis(this.options),
+        //     subscriber: new Redis(this.options),
+        //   });
         this.schema = await buildSchema({
             resolvers: [
                 LoginResolver,
@@ -42,10 +58,12 @@ class App {
                 ItemsResovler,
                 RegisteredUsersResolver,
                 LogoutResolver,
-                UploadAvatareResolver
+                UploadAvatareResolver,
+                FarmersAddedItemsResovler
             ],
             authChecker: authorizationChecker,
-            validate: false
+            validate: false,
+            // pubSub:  new RedisPubSub()
         });
         this.app.use(bodyParser.graphql());
         this.app.use(cors());

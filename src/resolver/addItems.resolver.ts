@@ -18,6 +18,7 @@ import { NewItemInput,
     FetchSelectedItemListsInput
 } from '../schema/items.schema';
 import ItemLists from '../models/addItems.model';
+import FarmarAddedItemLists from '../models/farmerAddedItems.model';
 import JwdTokenPayload from 'interface/JwdTokenPayload';
 import { Role, NotificationType, ValidationError } from '../constaint/constaint';
 import NotificationPayload from '../interface/Notification';
@@ -28,12 +29,15 @@ import SelectedItem from '../interface/SelectedItems';
 import { GraphQLUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
 import { Upload } from '../interface/Avatar';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 @Resolver()
 export default class ItemsResovler {
 
     public pubSUb: PubSub;
+    // public pubSUb: RedisPubSub;
     constructor() {
+        // this.pubSUb = new RedisPubSub();
         this.pubSUb = new PubSub();
     }
 
@@ -99,16 +103,22 @@ export default class ItemsResovler {
                     pickupDate: itemInput.pickupDate,
                     location: itemInput.location,
                     pickupTime: itemInput.pickupTime,
-                    pickupStatus: 'Pending'
+                    pickupStatus: 'Pending',
+                    userComment: '',
+                    adminComment: '',
                 };
                 user['itemsAdded'].push(item);
                 user.save();
                 const notficationPaylod = {
                     ...item,
-                    u_id: ctx.user_id
+                    u_id: ctx.user_id,
+                    itemId: itemInput.id,
+                    user_firstName: user.firstName,
+                    user_lastName: user.lastName
                 };
-                console.log(notficationPaylod);
-                this.pubSUb.publish('NOTIFICATIONS', {newNotification: notficationPaylod});
+                const farmerItem = new FarmarAddedItemLists(notficationPaylod);
+                farmerItem.save();
+                await this.pubSUb.publish('NOTIFICATIONS', {newNotification: notficationPaylod});
             }
             return  await user['itemsAdded'];
         }
@@ -178,7 +188,7 @@ export default class ItemsResovler {
         @Root() notificationPayload: AddItemNotification
     ) {
         console.log('notificationPayload =>', notificationPayload);
-        // this.pubSUb.asyncIterator(NotificationType.ADD_ITEMS);
+        this.pubSUb.asyncIterator('NOTIFICATIONS');
         return notificationPayload;
     }
 

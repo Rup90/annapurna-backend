@@ -110,4 +110,13 @@ export class FetchSelectedItemLists {
 
     @Field()
     pickupStatus: string;
+
+    @Field()
+    itemId: string;
+
+    @Field()
+    userComment: string;
+
+    @Field()
+    adminComment: string;
 }
