@@ -26,6 +26,7 @@ import { execute, subscribe } from 'graphql';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import FarmersAddedItemsResovler from './resolver/farmerAddedItems.resolver';
+import { DBError } from './utils/error-handler/errorHandler';
 // import * as Redis from 'ioredis';
 // import { RedisPubSub } from 'graphql-redis-subscriptions';
 
@@ -63,6 +64,7 @@ class App {
             ],
             authChecker: authorizationChecker,
             validate: false,
+            emitSchemaFile: true,
             // pubSub:  new RedisPubSub()
         });
         this.app.use(bodyParser.graphql());
@@ -88,7 +90,6 @@ class App {
                         },
                         graphiql: true,
                         playground: true,
-                        // subscriptionsEndpoint: `ws://localhost:5000/subscriptions`,
                         customFormatErrorFn: (error: any) => {
                             return {
                                     message: error.message,
@@ -132,7 +133,7 @@ Db.setupDb(new Db())
         // });
         const server = createServer(appInstance.app);
         server.listen(8000, () => {
-            console.log('Port <<>>>> running in 5000');
+            logger.log('info', 'Express server listening on port 8080');
             new SubscriptionServer({
               execute,
               subscribe,
@@ -145,5 +146,5 @@ Db.setupDb(new Db())
     })
     .catch((error) => {
         // console.log('database connection faild');
-        logger.log('error', 'database connection faild');
+        new DBError('DbConnetion', 'database connection faild');
     });

@@ -18,14 +18,14 @@ export const enum Category {
 export const enum ValidationError {
     INVALID_NAME = 'INVALID_NAME',
     INVALID_EMAIL = 'INVALID_EMAIL',
-    INVALID_PASSWORD = 'INVALID_PASSWORD',
+    INVALID_PASSWORD = 'Password should contain min 6 characters',
     INVALID_PHONE = 'INVALID_PHONE',
-    INVALID_ROLE = 'INVALID_ROLE',
+    INVALID_ROLE = 'Invalid Role',
     INVALID_ADDRESS = 'INVALID_ADDRESS',
-    USER_EXISTS = 'USER_EXISTS',
+    USER_EXISTS = 'User already exists',
     USER_NOT_FOUND = 'USER_NOT_FOUND',
-    INVALID_EMAIL_PASSWORD = 'INVALID_EMAIL_PASSWORD',
-    USER_DOESNOT_EXISTS = 'USER_DOESNOT_EXISTS',
+    INVALID_EMAIL_PASSWORD = 'Invalid username or password',
+    USER_DOESNOT_EXISTS = 'User Does not exists',
     INVALID_FIRST_NAME = 'INVALID_FIRST_NAME',
     INVALID_LAST_NAME = 'INVALID_LAST_NAME',
     PASSWORD_MISMATCH = 'PASSWORD_MISMATCH',
@@ -34,5 +34,5 @@ export const enum ValidationError {
 }
 
 export const enum NotificationType {
-    ADD_ITEMS = 'ADD_NEW_ITEM'
+    AddItems = 'ADD_NEW_ITEM'
 }

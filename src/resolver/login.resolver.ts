@@ -6,6 +6,7 @@ import { AuthData, LoginInput } from '../schema/login.schema';
 import RegisteredUserModel from '../models/registration.model';
 import CustomError from '../utils/custome.error';
 import constaint, { ValidationError } from '../constaint/constaint';
+import { APIError } from '../utils/error-handler/errorHandler';
 
 @Resolver()
 export default class LoginResolver {
@@ -14,11 +15,11 @@ export default class LoginResolver {
     async login(@Arg('loginInput') loginInput: LoginInput): Promise<AuthData> {
         const user = await RegisteredUserModel.findOne({ email: loginInput.email });
         if(!user) {
-            throw new CustomError([ValidationError.USER_DOESNOT_EXISTS], 401);
+            throw new APIError('userNotFound', ValidationError.USER_DOESNOT_EXISTS, 401, false);
         }
         const isEqual = await compare(loginInput.password, user.password);
         if(!isEqual) {
-            throw new CustomError([ValidationError.INVALID_EMAIL_PASSWORD], 401);
+            throw new APIError('invalidCredentials', ValidationError.INVALID_EMAIL_PASSWORD, 401, false);
         }
         const token = sign (
             {
