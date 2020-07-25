@@ -44,7 +44,7 @@ export default class FarmersAddedItemsResovler {
                 });
         await RegisteredUserModel.findOneAndUpdate({_id: inputParams.u_id, itemsAdded: {$elemMatch: {id: inputParams.itemId}}},
             {$set: {'itemsAdded.$.pickupStatus': inputParams.pickupStatus,
-                    'itemsAdded.$.userComment': inputParams.adminComment
+                    'itemsAdded.$.adminComment': inputParams.adminComment
                 }}, {
                         new: true,
                         upsert: true,
@@ -54,7 +54,7 @@ export default class FarmersAddedItemsResovler {
         const response = {
             status: 200,
             message: 'Successfully updated'
-        }
+        };
         return await response;
     }
 

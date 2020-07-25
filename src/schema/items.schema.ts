@@ -51,6 +51,40 @@ export class AddItemInput {
 }
 
 @InputType()
+export class UpdateItemInput {
+
+    @Field()
+    itemName: string;
+
+    @Field()
+    category: string;
+
+    @Field()
+    id: string;
+
+    @Field()
+    quantity: string;
+
+    @Field()
+    pricePerKg: string;
+
+    @Field()
+    pickupDate: string;
+
+    @Field()
+    location: string;
+
+    @Field()
+    pickupTime: string;
+
+    @Field()
+    adminComment?: string;
+
+    @Field()
+    userComment?: string;
+}
+
+@InputType()
 export class DeleteItemInput {
 
     @Field()
@@ -119,4 +153,10 @@ export class FetchSelectedItemLists {
 
     @Field()
     adminComment: string;
+}
+
+@InputType()
+export class DeleteAddedItem {
+    @Field()
+    itemName: string;
 }
