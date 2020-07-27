@@ -72,7 +72,7 @@ class App {
         this.app.use(AuthGuard);
         this.app.use('/images', express.static(path.join(__dirname, './images')));
         this.app.use((req, res, next) => {
-            logger.log('http', req.body);
+            logger.log(process.env.LEVELNAME, req.body);
             next();
         });
         this.app.use(

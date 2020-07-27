@@ -24,7 +24,7 @@ export default class RegistrationResolver {
        };
        if (userInput.role === 'FARMAR') {
             userModel['itemsAdded'] = [];
-            userModel['itemsPicked'] = [];
+            // userModel['itemsPicked'] = [];
        }
        const user = new RegisteredUserModel(userModel);
        user.save();
