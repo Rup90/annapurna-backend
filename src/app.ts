@@ -27,7 +27,8 @@ import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import FarmersAddedItemsResovler from './resolver/farmerAddedItems.resolver';
 import { DBError } from './utils/error-handler/errorHandler';
-// import * as Redis from 'ioredis';
+import * as depthLimit from 'graphql-depth-limit';
+import { createComplexityLimitRule } from 'graphql-validation-complexity';
 // import { RedisPubSub } from 'graphql-redis-subscriptions';
 
 class App {
@@ -47,10 +48,17 @@ class App {
     }
 
     private async config() {
-        // this.pubSub = new RedisPubSub({
-        //     publisher: new Redis(this.options),
-        //     subscriber: new Redis(this.options),
-        //   });
+        const ComplexityLimitRule = createComplexityLimitRule(1000, {
+            scalarCost: 1,
+            objectCost: 10, // Default is 0.
+            listFactor: 20, // Default is 10.
+        });
+
+        const DepthLimitRule = depthLimit(
+            4,
+            { ignore: [ 'whatever', 'trusted' ] },
+            depths => console.log(depths)
+        );
         this.schema = await buildSchema({
             resolvers: [
                 LoginResolver,
@@ -64,8 +72,7 @@ class App {
             ],
             authChecker: authorizationChecker,
             validate: false,
-            emitSchemaFile: true,
-            // pubSub:  new RedisPubSub()
+            emitSchemaFile: true
         });
         this.app.use(bodyParser.graphql());
         this.app.use(cors());
@@ -90,6 +97,10 @@ class App {
                         },
                         graphiql: true,
                         playground: true,
+                        validationRules: [
+                            ComplexityLimitRule,
+                            DepthLimitRule
+                        ],
                         customFormatErrorFn: (error: any) => {
                             return {
                                     message: error.message,
@@ -146,5 +157,5 @@ Db.setupDb(new Db())
     })
     .catch((error) => {
         // console.log('database connection faild');
-        new DBError('DbConnetion', 'database connection faild');
+        throw new DBError('DbConnetion', 'database connection faild');
     });
